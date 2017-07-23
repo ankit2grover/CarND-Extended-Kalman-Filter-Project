@@ -8,6 +8,7 @@
 #include <fstream>
 #include "kalman_filter.h"
 #include "tools.h"
+#include <math.h>
 
 class FusionEKF {
 public:
@@ -44,6 +45,9 @@ private:
   Eigen::MatrixXd R_radar_;
   Eigen::MatrixXd H_laser_;
   Eigen::MatrixXd Hj_;
+  //acceleration noise components
+	float noise_ax;
+	float noise_ay;
 };
 
 #endif /* FusionEKF_H_ */
