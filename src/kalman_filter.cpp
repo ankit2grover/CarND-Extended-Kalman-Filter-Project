@@ -1,5 +1,6 @@
 #include "kalman_filter.h"
 #include <iostream>
+#include "tools.h"
 
 using namespace std;
 using Eigen::MatrixXd;
@@ -84,6 +85,8 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   Hx << rho, phi, rhodot;
   VectorXd y = z - Hx;
   y(1) = atan2(sin(y(1)), cos(y(1)));
+  // Another approach to limit the values in [-Pi, Pi]
+  //y(1) = tools.wrapMinMax(y(1), -M_PI, M_PI);
   MatrixXd Ht = H_.transpose();
   MatrixXd S = H_ * P_ * Ht + R_;
   MatrixXd Si = S.inverse();

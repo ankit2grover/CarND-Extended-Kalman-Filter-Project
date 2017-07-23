@@ -84,3 +84,18 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
 	return Hj;
 }
 
+// From: http://stackoverflow.com/a/29871193/1321129
+/* change to `float/fmodf` or `long double/fmodl` or `int/%` as appropriate */
+/* wrap x -> [0,max) */
+double Tools::wrapMax(double x, double max)
+{
+  /* integer math: `(max + x % max) % max` */
+  return fmod(max + fmod(x, max), max);
+}
+
+/* wrap x -> [min,max) */
+double Tools::wrapMinMax(double x, double min, double max)
+{
+  return min + wrapMax(x - min, max - min);
+}
+
