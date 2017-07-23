@@ -21,7 +21,6 @@ void KalmanFilter::Init(VectorXd &x_in, MatrixXd &P_in, MatrixXd &F_in,
 
 void KalmanFilter::Predict() {
   /**
-  TODO:
     * predict the state
   */
   x_ = F_* x_;
@@ -31,7 +30,6 @@ void KalmanFilter::Predict() {
 
 void KalmanFilter::Update(const VectorXd &z) {
   /**
-  TODO:
     * update the state by using Kalman Filter equations
   */
   VectorXd y = z - H_ * x_;
@@ -50,7 +48,6 @@ void KalmanFilter::Update(const VectorXd &z) {
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
   /**
-  TODO:
     * update the state by using Extended Kalman Filter equations
   */
   auto px = x_(0);
@@ -58,32 +55,35 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 	auto vx = x_(2);
 	auto vy = x_(3);
 
-  auto c1 = px*px+py*py;
-  // Calculate rho and phi.
-  auto rho = sqrt(c1);
-  if (fabs(px) < 0.001) {
-    cout << "px value less than 0.001" << endl;
-    return;
+  if (fabs(px) < 0.00001) {
+    px = 0.00001;
   }
-  // Calculate phi value
-  auto param = py/px;
-  auto phi = atan(param);
-  //Normalize the Phi value.
-  // auto pi2 = 2 * PI;
-  // auto min = -1 * PI;
-  // auto max = PI;
-  // if (fabs(pi2) < 0.001) {
-  //   cout << "Phi value is less than 0: " << endl;
-  //   return;
-  // }
-  // auto new_phi = (max - min) * ((phi - min) / pi2);
-  // phi = phi + new_phi;
-  //End of normalized.
+
+  if (fabs(py) < 0.00001) {
+    py = 0.00001;
+  }
+
+  double c1 = px*px+py*py;
+  
+  // Calculate rho.
+  double rho = sqrt(c1);
+  
+  // Calculate bearing(phi) value
+  double phi = atan((py/px));
+  //double phi = atan2(sin(py), cos(px));
   // Calculate rhodot
-  auto rhodot = (px*vx + py*vy) / rho;
+  double rhodot;
+  // Check if rho value is equal to 0 then reset it and reset rhodot value also.
+  if (fabs(rho) < 0.00001) {
+    rhodot = 0.0  ;
+  } else {
+    rhodot = (px*vx + py*vy) / rho;
+  } 
+
   VectorXd Hx = VectorXd(3);
   Hx << rho, phi, rhodot;
-  auto y = z - Hx;
+  VectorXd y = z - Hx;
+  y(1) = atan2(sin(y(1)), cos(y(1)));
   MatrixXd Ht = H_.transpose();
   MatrixXd S = H_ * P_ * Ht + R_;
   MatrixXd Si = S.inverse();
