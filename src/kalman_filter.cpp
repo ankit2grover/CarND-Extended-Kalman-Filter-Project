@@ -70,7 +70,8 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   double rho = sqrt(c1);
   
   // Calculate bearing(phi) value
-  double phi = atan((py/px));
+  //double phi = atan((py/px));
+  double phi = atan2(py, px);
   //double phi = atan2(sin(py), cos(px));
   // Calculate rhodot
   double rhodot;
